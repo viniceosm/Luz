@@ -24,6 +24,7 @@
 	<script>
 	const SUPPORTS_MEDIA_DEVICES = 'mediaDevices' in navigator;
 	let track;
+	let jaLigou = false;
 
 	$(document).ready(function() {
 		if (SUPPORTS_MEDIA_DEVICES) {
@@ -73,10 +74,14 @@
 				track.applyConstraints({
 					advanced: [{torch: true}]
 				});
-			} else {
+
+				jaLigou = true;
+			} else if (jaLigou == true) {
 				track.applyConstraints({
 					advanced: [{torch: false}]
 				});
+
+				jaLigou = false;
 			}
 		});
 	});
