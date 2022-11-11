@@ -19,6 +19,7 @@
 </head>
 <body>
 	<div class="container">
+		<p></p>
 	</div>
 
 	<script>
@@ -68,7 +69,7 @@
 			* 2. Domain requires SSL to grant access to the webcam
 			*/
 
-			// $('.container p').text('Light intensity/brightness around you is: '+lightIntensity);
+			$('.container p').text(lightIntensity);
 
 			if (lightIntensity <= 10) {
 				track.applyConstraints({
