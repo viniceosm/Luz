@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1" >
+	<title>Luz emergência</title>
+	
+	<script src="js/jquery-1.9.1.js" ></script>
+	<script src="js/jquery.image-brightness.js" ></script>
+	<script src="js/jquery.webcam-light-sensor.js" ></script>
+
+	<style>
+	body {
+		margin: 0;
+		padding: 0;
+		font-family: arial;
+	}
+	</style>
+</head>
+<body>
+	<div class="container">
+	</div>
+
+	<script>
+	const SUPPORTS_MEDIA_DEVICES = 'mediaDevices' in navigator;
+	let track;
+
+	$(document).ready(function() {
+		if (SUPPORTS_MEDIA_DEVICES) {
+			//Get the environment camera (usually the second one)
+			navigator.mediaDevices.enumerateDevices().then(devices => {
+				const cameras = devices.filter((device) => device.kind === 'videoinput');
+
+				if (cameras.length === 0) {
+					throw 'No camera found on this device.';
+				}
+				const camera = cameras[cameras.length - 1];
+
+				// Create stream and get video track
+				navigator.mediaDevices.getUserMedia({
+				video: {
+					deviceId: camera.deviceId,
+					facingMode: ['user', 'environment'],
+					height: {ideal: 1080},
+					width: {ideal: 1920}
+				}
+				}).then(stream => {
+					track = stream.getVideoTracks()[0];
+
+					//Create image capture object and get camera capabilities
+					const imageCapture = new ImageCapture(track)
+					const photoCapabilities = imageCapture.getPhotoCapabilities().then(() => {
+						//todo: check if camera has a torch
+					});
+				});
+			});
+			
+			//The light will be on as long the track exists
+			
+			
+		}
+
+		$.fn.webcamLightSensor({ refreshInterval: 100 }, function(lightIntensity) { // callback
+			/**
+			* NOTE
+			* 1. Light intensity range is 0 to 255 (0 is the darkest and 255 is the brightest)
+			* 2. Domain requires SSL to grant access to the webcam
+			*/
+
+			// $('.container p').text('Light intensity/brightness around you is: '+lightIntensity);
+
+			if (lightIntensity <= 10) {
+				track.applyConstraints({
+					advanced: [{torch: true}]
+				});
+			}
+		});
+	});
+	</script>
+
+</body>
+</html>
